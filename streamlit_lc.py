@@ -10,7 +10,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # Configuration
-st.set_page_config(page_title="MPG Explorer", page_icon="🚗", layout="wide")
+st.set_page_config(page_title="MPG Explorer", page_icon="🚗")
 
 
 @st.cache_data
