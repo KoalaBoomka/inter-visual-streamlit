@@ -33,10 +33,18 @@ def create_matplotlib_plot(df, means, show_means):
         plt.style.use('default')
 
     fig, ax = plt.subplots(figsize=(14, 8))
-    ax.scatter(df['displ'], df['hwy'], alpha=0.7, color='#DA70D6')
+    ax.scatter(df['displ'], df['hwy'], alpha=0.8, color='#DA70D6')
     
     if show_means == 'Yes':
-        ax.scatter(means['displ'], means['hwy'], alpha=0.7, color='#7FFF00', s=100)
+        ax.scatter(means['displ'], means['hwy'], alpha=0.8, color='#7FFF00', s=100)
+
+        for class_name, row in means.iterrows():
+            ax.annotate(class_name, 
+                       (row['displ'], row['hwy']),
+                       xytext=(5, 5), 
+                       textcoords='offset points',
+                       fontsize=10,
+                       color='#7FFF00')
     
     ax.set_title('Engine Size vs Highway Fuel Mileage')
     ax.set_xlabel('Displacement (Liters)')
@@ -46,7 +54,7 @@ def create_matplotlib_plot(df, means, show_means):
 
 def create_plotly_plot(df, means, show_means):
     """Create Plotly scatter plot."""
-    fig = px.scatter(df, x='displ', y='hwy', opacity=0.7,
+    fig = px.scatter(df, x='displ', y='hwy', opacity=0.8,
                      range_x=[1, 8], range_y=[10, 50],
                      width=750, height=800,
                      labels={"displ": "Displacement (Liters)", "hwy": "Highway MPG"},
@@ -54,9 +62,13 @@ def create_plotly_plot(df, means, show_means):
                      color_discrete_sequence=['#DA70D6'])
     
     if show_means == "Yes":
-        fig.add_trace(go.Scatter(x=means['displ'], y=means['hwy'], 
-                                 mode="markers",
-                                 marker=dict(color='#7FFF00', size=10)))
+        fig.add_trace(go.Scatter(x=means['displ'], y=means['hwy'], opacity=0.8,
+                                mode="markers+text",
+                                marker=dict(color='#7FFF00', size=10),
+                                text=means.index,  # Class names
+                                textposition="middle right",
+                                textfont=dict(color='#7FFF00', size=10),
+                                name="Class Means"))
         fig.update_layout(showlegend=False)
     
     return fig
