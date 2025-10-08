@@ -20,7 +20,8 @@ streamlit run streamlit_lc.py
 - Compare engine size vs highway MPG
 - Toggle class means
 - Switch between Matplotlib and Plotly
-<img width="1263" height="974" alt="inter-visual streamlit app" src="https://github.com/user-attachments/assets/77f7a5a7-eaca-4c0a-b48e-9dcf439c5706" />
+<img width="1263" height="974" alt="inter-visual streamlit app_1" src="https://github.com/user-attachments/assets/a63bc33a-4380-48db-a89e-610e818c106f" />
+
 
 
 ## Data
