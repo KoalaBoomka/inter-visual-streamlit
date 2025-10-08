@@ -11,7 +11,7 @@ pip install streamlit pandas matplotlib plotly
 ## Usage
 
 ```bash
-streamlit run app.py
+streamlit run streamlit_lc.py
 ```
 
 ## Features
