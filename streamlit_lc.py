@@ -55,7 +55,8 @@ def create_matplotlib_plot(df, means, show_means):
 def create_plotly_plot(df, means, show_means):
     """Create Plotly scatter plot."""
     fig = px.scatter(df, x='displ', y='hwy', opacity=0.8,
-                     range_x=[1, 8], range_y=[10, 50],
+                     range_x=[df['displ'].min() - 0.5, df['displ'].max() + 0.5],
+                     range_y=[df['hwy'].min() - 2, df['hwy'].max() + 2],
                      width=750, height=800,
                      labels={"displ": "Displacement (Liters)", "hwy": "Highway MPG"},
                      title="Engine Size vs Highway Fuel Mileage",
@@ -84,30 +85,62 @@ mpg_df = load_data('data/mpg.csv')
 with st.expander("View Dataset"):
     st.dataframe(mpg_df)
 
-# Controls
-col1, col2, col3 = st.columns([3, 1, 1])
-
+col1, col2 = st.columns([3, 1])
 years = ['All'] + sorted(mpg_df['year'].unique().tolist())
 year = col1.selectbox('Choose a year', years)
 show_means = col2.radio('Show means', ['No', 'Yes'], index=1)
-plot_type = col3.radio("Plot type", ["Plotly", "Matplotlib"])
 
 # Filter data
 filtered_df = mpg_df if year == 'All' else mpg_df[mpg_df['year'] == year]
 means = filtered_df.groupby('class').mean(numeric_only=True)
 
-# Display plot
-if plot_type == "Matplotlib":
-    st.pyplot(create_matplotlib_plot(filtered_df, means, show_means), use_container_width=False)
-else:
+# Controls
+tab1, tab2 = st.tabs(['Plotly', 'Matplotlib'])
+
+with tab1: 
     st.plotly_chart(create_plotly_plot(filtered_df, means, show_means))
+
+with tab2:
+    st.pyplot(create_matplotlib_plot(filtered_df, means, show_means), use_container_width=False)
+
 
 # Footer
 st.caption("Data: [UCI ML Repository](https://archive.ics.uci.edu/ml/datasets/auto+mpg)")
 
+
 # Map demo
 st.subheader("Map Demo")
+
 ds_geo = px.data.carshare()
-ds_geo[['lat', 'lon']] = ds_geo[['centroid_lat', 'centroid_lon']]
-ds_geo['color'] = '#DA70D6'
-st.map(ds_geo, color='color')
+ds_geo = ds_geo.rename(columns={
+    'centroid_lat': 'lat',
+    'centroid_lon': 'lon'
+    }
+)
+
+map_style_options = {
+    "Dark" : "carto-darkmatter", 
+    "Light" : "open-street-map", 
+    "Minimalistic" : "carto-positron"
+}
+
+selected_style = st.selectbox("Select Map Style", list(map_style_options.keys()), index=0)
+
+fig_map = px.scatter_mapbox(
+    ds_geo,
+    lat='lat',
+    lon='lon',
+    color_discrete_sequence=['#DA70D6'],  
+    zoom=12,  
+    height=500,
+    hover_data={
+        
+    }
+)
+
+fig_map.update_layout(
+    mapbox_style=map_style_options[selected_style],  
+    margin={"r":0,"t":0,"l":0,"b":0}
+    )
+
+st.plotly_chart(fig_map, use_container_width=True)
