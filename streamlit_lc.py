@@ -78,12 +78,28 @@ def create_plotly_plot(df, means, show_means):
 # Main app
 st.title('🚗 MPG Data Explorer')
 
+st.markdown("""
+**Description:**
+\nThis interactive application explores the **Auto MPG dataset** from the UCI Machine Learning Repository. 
+The dataset contains fuel consumption data for 398 vehicles manufactured between 1970-1982, 
+including engine specifications and performance metrics.
+
+**Key Features:**
+- Compare engine displacement vs. highway fuel efficiency
+- Filter data by manufacturing year
+- Visualize class averages across vehicle types
+- Interactive charts with Plotly and Matplotlib
+""")
+
 # Load data
 mpg_df = load_data('data/mpg.csv')
 
 # Show dataset option
 with st.expander("View Dataset"):
     st.dataframe(mpg_df)
+
+# Chart demo
+st.subheader("📊 Chart Examples")
 
 col1, col2 = st.columns([3, 1])
 years = ['All'] + sorted(mpg_df['year'].unique().tolist())
@@ -109,7 +125,7 @@ st.caption("Data: [UCI ML Repository](https://archive.ics.uci.edu/ml/datasets/au
 
 
 # Map demo
-st.subheader("Map Demo")
+st.subheader("📍 Map Demo")
 
 ds_geo = px.data.carshare()
 ds_geo = ds_geo.rename(columns={
@@ -144,3 +160,12 @@ fig_map.update_layout(
     )
 
 st.plotly_chart(fig_map, use_container_width=True)
+
+st.markdown("---")
+st.markdown(
+    "<p style='text-align: center;'>"
+    "Created by Daria at the <a href='https://nexademy.org/data-science' target='_blank' style='color: #DA70D6;'>Constructor Data Science Bootcamp</a> | "
+    "Built with Streamlit 💜"
+    "</p>", 
+    unsafe_allow_html=True
+)
