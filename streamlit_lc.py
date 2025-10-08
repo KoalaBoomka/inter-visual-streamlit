@@ -23,11 +23,20 @@ def load_data(path):
 
 def create_matplotlib_plot(df, means, show_means):
     """Create Matplotlib scatter plot."""
-    fig, ax = plt.subplots(figsize=(10, 8))
-    ax.scatter(df['displ'], df['hwy'], alpha=0.7)
+
+    if 'theme' not in st.session_state:
+        st.session_state.theme = 'dark'
+    
+    if st.session_state.theme == 'dark':
+        plt.style.use('dark_background')
+    else:
+        plt.style.use('default')
+
+    fig, ax = plt.subplots(figsize=(14, 8))
+    ax.scatter(df['displ'], df['hwy'], alpha=0.7, color='#DA70D6')
     
     if show_means == 'Yes':
-        ax.scatter(means['displ'], means['hwy'], alpha=0.7, color='red', s=100)
+        ax.scatter(means['displ'], means['hwy'], alpha=0.7, color='#7FFF00', s=100)
     
     ax.set_title('Engine Size vs Highway Fuel Mileage')
     ax.set_xlabel('Displacement (Liters)')
@@ -37,13 +46,17 @@ def create_matplotlib_plot(df, means, show_means):
 
 def create_plotly_plot(df, means, show_means):
     """Create Plotly scatter plot."""
-    fig = px.scatter(df, x='displ', y='hwy', opacity=0.5,
+    fig = px.scatter(df, x='displ', y='hwy', opacity=0.7,
                      range_x=[1, 8], range_y=[10, 50],
+                     width=750, height=800,
                      labels={"displ": "Displacement (Liters)", "hwy": "Highway MPG"},
-                     title="Engine Size vs Highway Fuel Mileage")
+                     title="Engine Size vs Highway Fuel Mileage",
+                     color_discrete_sequence=['#DA70D6'])
     
     if show_means == "Yes":
-        fig.add_trace(go.Scatter(x=means['displ'], y=means['hwy'], mode="markers"))
+        fig.add_trace(go.Scatter(x=means['displ'], y=means['hwy'], 
+                                 mode="markers",
+                                 marker=dict(color='#7FFF00', size=10)))
         fig.update_layout(showlegend=False)
     
     return fig
@@ -64,7 +77,7 @@ col1, col2, col3 = st.columns([3, 1, 1])
 
 years = ['All'] + sorted(mpg_df['year'].unique().tolist())
 year = col1.selectbox('Choose a year', years)
-show_means = col2.radio('Show means', ['No', 'Yes'])
+show_means = col2.radio('Show means', ['No', 'Yes'], index=1)
 plot_type = col3.radio("Plot type", ["Plotly", "Matplotlib"])
 
 # Filter data
@@ -73,7 +86,7 @@ means = filtered_df.groupby('class').mean(numeric_only=True)
 
 # Display plot
 if plot_type == "Matplotlib":
-    st.pyplot(create_matplotlib_plot(filtered_df, means, show_means))
+    st.pyplot(create_matplotlib_plot(filtered_df, means, show_means), use_container_width=False)
 else:
     st.plotly_chart(create_plotly_plot(filtered_df, means, show_means))
 
@@ -84,4 +97,5 @@ st.caption("Data: [UCI ML Repository](https://archive.ics.uci.edu/ml/datasets/au
 st.subheader("Map Demo")
 ds_geo = px.data.carshare()
 ds_geo[['lat', 'lon']] = ds_geo[['centroid_lat', 'centroid_lon']]
-st.map(ds_geo)
+ds_geo['color'] = '#DA70D6'
+st.map(ds_geo, color='color')
